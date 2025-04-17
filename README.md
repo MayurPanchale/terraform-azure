@@ -33,6 +33,7 @@ mkdir myagent && cd myagent
 bash
 
 curl -O https://vstsagentpackage.azureedge.net/agent/4.254.0/vsts-agent-linux-x64-4.254.0.tar.gz
+
 ✅ Step 4: Extract the Archive
 bash
 
