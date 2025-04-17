@@ -1,0 +1,13 @@
+# Ensure YAML and Terraform files use LF (for CI/CD compatibility)
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.tf   text eol=lf
+*.tfvars text eol=lf
+
+# Scripts
+*.sh   text eol=lf
+*.ps1  text eol=crlf
+*.bat  text eol=crlf
+
+# Make all other text files respect Git settings
+* text=auto
