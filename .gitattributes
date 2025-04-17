@@ -11,3 +11,7 @@
 
 # Make all other text files respect Git settings
 * text=auto
+
+*.tfstate merge=ours
+*.tfstate.backup merge=ours
+
