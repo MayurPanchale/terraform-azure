@@ -1,111 +1,102 @@
-# Azure DevOps with Terraform 🏗
+## 🏗 Azure DevOps with Terraform
+This project demonstrates how to use Terraform in Azure DevOps to manage infrastructure as code (IaC) within a CI/CD pipeline.
 
-This project demonstrates how to use **Terraform** in **Azure DevOps** to manage infrastructure as code in a CI/CD pipeline.
+## 🔍 How Terraform Works in Azure DevOps
+Terraform Init — Initializes the backend and downloads providers.
 
----
+Terraform Plan — Shows the changes Terraform will make.
 
-## 🔍 How Terraform Works
+Terraform Apply — Applies the planned changes.
 
+State Management — Terraform uses a remote state stored in an Azure Storage Account for consistency.
 
+All steps can be automated via Azure DevOps pipelines, using either YAML or Classic Release Pipelines.
 
+## 🐧 Install Azure DevOps Agent on Linux (Ubuntu)
+Follow these steps to install a self-hosted agent on a Linux VM for running Terraform pipelines.
 
-
-
-
-
-## Step-by-Step: Install Azure DevOps Agent on Linux
-🐧 This guide assumes you're running Ubuntu or similar Linux distro and you're already connected to your VM via SSH.
-
-✅ Step 1: Install Required Dependencies
+### ✅ Step 1: Install Required Dependencies
 bash
-
 
 sudo apt update
 sudo apt install -y curl tar libicu70
-💡 If libicu70 isn't available (for older Ubuntu versions), use:
-sudo apt install libicu-dev
+💡 For older Ubuntu versions:
 
-✅ Step 2: Create a Folder for the Agent
 bash
 
+sudo apt install libicu-dev
+✅ Step 2: Create Agent Directory
+bash
 
 mkdir myagent && cd myagent
 ✅ Step 3: Download the Agent
 bash
 
-
 curl -O https://vstsagentpackage.azureedge.net/agent/4.254.0/vsts-agent-linux-x64-4.254.0.tar.gz
 ✅ Step 4: Extract the Archive
 bash
 
-
 tar zxvf vsts-agent-linux-x64-4.254.0.tar.gz
 ✅ Step 5: Configure the Agent
-Before this step, you'll need:
+Before running the configuration script, gather:
 
-Your Azure DevOps org URL (e.g., https://dev.azure.com/your-org-name)
+Your Azure DevOps organization URL (e.g., https://dev.azure.com/your-org-name)
 
-A Personal Access Token (PAT) with scope:
-Agent Pools (read & manage) and Pipelines (read & execute)
+A Personal Access Token (PAT) with scopes:
 
-👉 Create one here: https://dev.azure.com → User icon → Personal access tokens
+Agent Pools (Read & manage)
 
-Then run:
+Pipelines (Read & execute)
+
+Then configure the agent:
 
 bash
-
 
 ./config.sh
-And follow prompts:
+Follow the prompts:
 
-Server URL: e.g., https://dev.azure.com/your-org-name
+Server URL: e.g. https://dev.azure.com/your-org-name
 
-Authentication: PAT
+Authentication: Choose PAT and enter your token
 
-Agent Pool: use Default or your custom one
+Agent Pool: Select Default or your custom pool
 
-Agent Name: any name you like
+Agent Name: Any unique name
 
-Work folder: press Enter to accept default
+Work Folder: Press Enter to use default
 
-✅ Step 6: Install and Start as a Service
+✅ Step 6: Install and Start the Agent as a Service
 bash
-
 
 sudo ./svc.sh install
 sudo ./svc.sh start
-To check status:
+Check status:
 
 bash
-
 
 sudo ./svc.sh status
-✅ Step 7: Confirm It's Connected
-Go to: 🔗 https://dev.azure.com/<your-org-name>/_settings/agentpools
-➡️ Click the agent pool
-➡️ You should see your new agent online
+✅ Step 7: Confirm Agent is Connected
+Go to: https://dev.azure.com/<your-org-name>/_settings/agentpools
 
-🧼 Optional: Auto Start on Boot
-The above steps already configure it as a systemd service — it will auto-start after reboot. You can manually start/stop with:
+Click your agent pool
+
+You should see your new agent listed as online
+
+🧼 Optional: Manual Start/Stop
+The agent is set to auto-start via systemd, but you can control it manually:
 
 bash
-
 
 sudo ./svc.sh stop
 sudo ./svc.sh start
-✅ You're Done!
-You now have a fully working self-hosted Azure DevOps agent on your Linux VM 🎉
-
-
-## ✅ Goal: Deploy Terraform from Classic Release Pipeline using Your Self-Hosted Agent
-
-🔷 STEP 1: Create a Classic Release Pipeline
+🚀 Goal: Deploy Terraform via Classic Release Pipeline
+🔷 Step 1: Create a Release Pipeline
 Go to Pipelines > Releases > New Pipeline
 
-Select "Empty job" when prompted to start from scratch.
+Select "Empty job" when prompted
 
-🔷 STEP 2: Link Build Artifact
-In the Artifacts section (top), click "Add an artifact"
+🔷 Step 2: Link Build Artifact
+In the Artifacts section, click "Add an artifact"
 
 Choose:
 
@@ -115,17 +106,40 @@ Source: Your Terraform CI pipeline
 
 Default version: Latest
 
-Source alias: terraform_artifact (or any name)
+Source alias: terraform_artifact (or custom)
 
-Click Add.
+Click Add to save.
 
-🔷 STEP 3: Configure Agent Job (Use Your Self-Hosted Agent)
+🔷 Step 3: Use Your Self-Hosted Agent
 Click on the Stage (e.g., Stage 1) → Tasks
 
 Select the Agent job
 
-In the Agent pool, choose the pool where your self-hosted agent is registered
+In Agent pool, choose your self-hosted pool (e.g., SelfHostedPool)
 
-e.g., SelfHostedPool
+Leave Agent Specification as default (your local agent handles this)
 
-Leave Agent Specification as default (your agent controls that)
+✅ Done! You're now set up to run Terraform deployments from your own Linux-based Azure DevOps agent.
+
+Let me know if you want to add sections on:
+
+YAML-based pipelines
+
+Troubleshooting common agent errors
+
+Terraform backend configuration in detail
+
+Ready to keep going?
+
+
+## ⚙️ Terraform Backend Setup in Azure
+Terraform uses a backend to store the state file remotely and safely. In Azure, this is typically an Azure Storage Account.
+
+📦 Components You Need
+Resource Group – e.g., demo-resources
+
+Storage Account – e.g., mvpstorage33
+
+Storage Container – e.g., prod-tfstate
+
+State File Name – e.g., terraform.tfstate
